@@ -1,0 +1,41 @@
+Сначала выполнить вот это
+from blog.models import Category, Post
+
+
+
+
+1) Получить все Категории
+Category.objects.all()
+<QuerySet [<Category: День как день>, <Category: Здоровье>, <Category: Наблюдения>, <Category: Посиделки>, <Category: Путешествия>, <Category: Работа>]>
+2) Получить все посты
+Post.objects.all()
+<QuerySet [<Post: Обед>, <Post: Блины>, <Post: Собрались в редакции «Русской мысли»>, <Post: Обед в «Континентале»>, <Post: Любительский спектакль>, <Post: Кровохарканье>, <Post: Приезжал ко мне Иван Щеглов>, <Post: Гости>, <Post: Две школы>, <Post: Освящение школы в Новоселках>, <Post: Меня пишет художник>, <Post: Медаль>, <Post: Я в Петербурге>, <Post: Клопы>, <Post: Париж>, <Post: Здесь много русских>, <Post: Бой с коровами>, <Post: Дорога>, <Post: Знакомство с Максимом Ковалевским>, <Post: Признания шпиона>, '...(remaining elements truncated)...']>
+3) Получить все посты, где название = 'Обед'
+Post.objects.filter(title__contains='Обед')
+<QuerySet [<Post: Обед>, <Post: Обед в «Континентале»>]>
+4) Получить все посты, сделанные не раньше 1 января 2023 года
+import datetime
+Post.objects.filter(pub_date__gte=datetime.date(2023, 01, 01))
+<QuerySet [<Post: Покупки>, <Post: Отдохнули>]>
+5) Получить id поста, сделанного после 2100 года
+Post.objects.get(pub_date__gte=datetime.date(2100, 1, 1)).id
+24
+6) Вывести все посты с сортировкой по времени (сначала новые)
+Post.objects.order_by('-pub_date')
+<QuerySet [<Post: Отдохнули>, <Post: Покупки>, <Post: Кража>, <Post: Неприятное зрелище>, <Post: Признания шпиона>, <Post: Знакомство с Максимом Ковалевским>, <Post: Дорога>, <Post: Бой с коровами>, <Post: Здесь много русских>, <Post: Париж>, <Post: Клопы>, <Post: Я в Петербурге>, <Post: Медаль>, <Post: Освящение школы в Новоселках>, <Post: Меня пишет художник>, <Post: Две школы>, <Post: Гости>, <Post: Приезжал ко мне Иван Щеглов>, <Post: Кровохарканье>, <Post: Не дурно прожил>, '...(remaining elements truncated)...']>
+7) Вывести все посты, у которых место локации 'Ницца'. Обращение к другой модели (Location) через ключ
+Post.objects.filter(location__name='Ницца')
+<QuerySet [<Post: Дорога>, <Post: Знакомство с Максимом Ковалевским>, <Post: Признания шпиона>]>
+8) Вывести существует ли категория с названием 'Путешествия'
+Category.objects.filter(title='Путешествия').exists()
+True
+9) Поменять локацию постам. Те, у которых было 'Ницца' станет 'Москва' (id=5)
+Post.objects.filter(location__name='Ницца').update(location_id=5)
+3
+Также можно теперь проверить
+Post.objects.filter(location__name='Ницца')
+<QuerySet []>
+Постов с локацией 'Ницца' больше нет
+10) Получаем все посты, кроме тех, которые были выпущены до 1 октября 1897 года
+Post.objects.exclude(pub_date__lt=datetime.date(1897, 10, 1))
+<QuerySet [<Post: Признания шпиона>, <Post: Неприятное зрелище>, <Post: Кража>, <Post: Покупки>, <Post: Отдохнули>]>
